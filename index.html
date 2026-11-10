@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fff4f7">
+<title>¿Amistad o tranquilidad?</title>
+<style>
+:root{--pink:#d94f83;--pink-dark:#a92f60;--ink:#34232c;--muted:#806b75;--paper:#fff;--bg:#fff4f7;--line:#f0dce5}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at top left,#ffe0ec 0,transparent 34%),var(--bg);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);display:flex;justify-content:center;padding:22px 14px}
+main{width:min(100%,560px);align-self:center}
+.card{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:26px;padding:clamp(22px,5vw,34px);box-shadow:0 18px 55px rgba(130,60,90,.10)}
+.top{text-align:center;margin-bottom:24px}
+.heart{font-size:34px}
+.kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--pink-dark);font-weight:800}
+h1{font-size:clamp(27px,7vw,36px);line-height:1.1;margin:9px 0;color:#5b2940}
+.subtitle{color:var(--muted);line-height:1.55;margin:10px auto 0;max-width:390px;font-size:15px}
+.progressrow{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px;font-weight:650;margin:0 0 9px}
+.track{height:7px;background:#f5e6ed;border-radius:99px;overflow:hidden;margin-bottom:25px}
+.fill{height:100%;width:0;background:linear-gradient(90deg,#ed8bb0,var(--pink));border-radius:99px;transition:width .25s}
+h2{font-size:21px;line-height:1.35;margin:0 0 18px}
+.options{display:grid;gap:11px}
+.option{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:15px;padding:15px;color:var(--ink);font:inherit;font-size:15px;line-height:1.4;cursor:pointer;transition:.15s}
+.option:hover{border-color:#e9a1bd;background:#fff9fb}
+.option.selected{border-color:var(--pink);background:#fff0f5;box-shadow:0 0 0 2px rgba(217,79,131,.08)}
+.dot{flex:0 0 19px;width:19px;height:19px;border:1.6px solid #cdaab9;border-radius:50%;display:grid;place-items:center}
+.selected .dot{border-color:var(--pink);background:var(--pink)}
+.selected .dot:after{content:"";width:7px;height:7px;border-radius:50%;background:#fff}
+.actions{display:flex;gap:10px;margin-top:24px}
+button.primary,button.secondary{border:0;border-radius:14px;padding:13px 18px;font:inherit;font-weight:750;cursor:pointer}
+.primary{background:var(--pink);color:white;flex:1}
+.primary:disabled{opacity:.42;cursor:not-allowed}
+.secondary{background:#f8edf2;color:#74465b}
+.note{font-size:12px;color:var(--muted);line-height:1.5;text-align:center;margin:20px 0 0}
+.result{text-align:center}
+.score{font-size:42px;font-weight:850;color:var(--pink-dark);margin:10px 0 0}
+.result h2{font-size:25px;margin:8px 0 12px}
+.result p{line-height:1.65;color:#6d5862}
+.summary{text-align:left;background:#fff7fa;border:1px solid var(--line);border-radius:16px;padding:16px;margin:18px 0}
+.summary strong{color:#63324a}
+.footer{font-size:11px;color:#9a8490;text-align:center;margin:14px 0 0}
+.hidden{display:none!important}
+@media(max-width:380px){body{padding:12px 9px}.card{padding:20px 17px}.option{padding:13px;font-size:14px}}
+</style>
+</head>
+<body>
+<main>
+<section class="card" id="quiz">
+  <header class="top">
+    <div class="heart">♡</div>
+    <div class="kicker">Un espacio para hablar con cariño</div>
+    <h1>¿Amistad o tranquilidad?</h1>
+    <p class="subtitle">Seis preguntas para pensar sobre los límites, las amistades y el cuidado de una relación. No hay respuestas perfectas: lo importante es ser sincera.</p>
+  </header>
+  <div class="progressrow"><span id="stepLabel">Pregunta 1 de 6</span><span id="percent">17%</span></div>
+  <div class="track"><div class="fill" id="progress"></div></div>
+  <div id="questionArea">
+    <h2 id="question"></h2>
+    <div class="options" id="options"></div>
+  </div>
+  <div class="actions">
+    <button class="secondary" id="back" type="button" disabled>Anterior</button>
+    <button class="primary" id="next" type="button" disabled>Siguiente</button>
+  </div>
+  <p class="note">Este cuestionario no busca decidir por nadie. Una relación sana permite hablar de lo que incomoda y llegar a acuerdos sin imponer ni controlar.</p>
+</section>
+
+<section class="card result hidden" id="result">
+  <div class="heart">♡</div>
+  <div class="kicker">Terminaste el cuestionario</div>
+  <div class="score" id="score"></div>
+  <h2 id="resultTitle">Gracias por responder</h2>
+  <p id="resultText"></p>
+  <div class="summary" id="summary"></div>
+  <p><strong>Para conversar:</strong> ¿Qué límites te parecen justos cuando una amistad afecta la tranquilidad de una relación?</p>
+  <div class="actions">
+    <button class="secondary" id="restart" type="button">Volver a empezar</button>
+    <button class="primary" id="share" type="button">Compartir respuestas</button>
+  </div>
+  <p class="note" id="shareNote">Puedes compartir el resumen para conversar juntos, sin presiones.</p>
+</section>
+<p class="footer">Hecho con cariño · Hablar y escucharse también es cuidar.</p>
+</main>
+<script>
+const questions = [
+ {q:"Si una persona que consideras amiga constantemente genera problemas en tu relación, ¿cómo lo ves?",a:["Una amistad debería aportar cosas buenas, no conflictos constantes.","Depende de la situación y de lo que haya pasado.","No creo que eso deba afectar la amistad."]},
+ {q:"¿Vale la pena conservar una amistad si nunca toma en cuenta cómo afecta a tu relación?",a:["Es importante hablarlo y poner límites si hace falta.","Intentaría mantener la amistad y resolverlo poco a poco.","No cambiaría nada por ahora."]},
+ {q:"Si una amiga no respeta tu relación ni a tu pareja, ¿qué harías?",a:["Hablaría con ella y tomaría distancia si sigue igual.","Intentaría explicarle varias veces cómo me siento.","Seguiría tratándola exactamente igual."]},
+ {q:"¿Qué demuestra más madurez en una amistad?",a:["Reconocer cuándo una relación hace daño y establecer límites.","Mantener la amistad sin hablar de los problemas.","Evitar el tema para no tener discusiones."]},
+ {q:"Si tu pareja te cuenta que una amistad le hace sentir incómodo, ¿qué sería lo mejor?",a:["Escuchar, entender qué pasó y buscar juntos una solución.","Decirle que es un asunto que no necesita conversar.","Seguir igual sin intentar entender su preocupación."]},
+ {q:"Si después de hablarlo queda claro que una amistad está perjudicando la relación, ¿qué opción considerarías?",a:["Poner límites o tomar distancia, según lo que esté pasando.","Intentar conservar ambas relaciones sin cambiar nada.","Dejar el tema sin resolverlo."]}
+];
+let current=0, answers=Array(questions.length).fill(null);
+const $=id=>document.getElementById(id);
+function render(){
+ const q=questions[current];
+ $("stepLabel").textContent=`Pregunta ${current+1} de ${questions.length}`;
+ $("percent").textContent=`${Math.round((current+1)/questions.length*100)}%`;
+ $("progress").style.width=`${(current+1)/questions.length*100}%`;
+ $("question").textContent=q.q;
+ $("options").innerHTML="";
+ q.a.forEach((answer,index)=>{
+   const b=document.createElement("button");
+   b.type="button";b.className="option"+(answers[current]===index?" selected":"");
+   b.setAttribute("aria-pressed",answers[current]===index?"true":"false");
+   const dot=document.createElement("span");dot.className="dot";
+   const label=document.createElement("span");label.textContent=answer;
+   b.append(dot,label);
+   b.addEventListener("click",()=>{answers[current]=index;render();});
+   $("options").appendChild(b);
+ });
+ $("back").disabled=current===0;
+ $("next").disabled=answers[current]===null;
+ $("next").textContent=current===questions.length-1?"Ver reflexión":"Siguiente";
+}
+function finish(){
+ $("quiz").classList.add("hidden");$("result").classList.remove("hidden");
+ const thoughtful=answers.filter(v=>v===0).length;
+ $("score").textContent=`${thoughtful} de 6`;
+ $("resultTitle").textContent=thoughtful>=5?"Muchas respuestas orientadas al diálogo ❤️":thoughtful>=3?"Hay puntos que vale la pena conversar ❤️":"Una oportunidad para hablar con calma ❤️";
+ $("resultText").textContent="Tus respuestas muestran cómo ves los límites y las amistades. No son una calificación ni una obligación: cada situación merece contexto, respeto y una conversación honesta.";
+ $("summary").innerHTML="<strong>Tus respuestas</strong><ol>"+questions.map((q,i)=>`<li style="margin:9px 0">${q.q}<br><span style="color:#806b75">${q.a[answers[i]]}</span></li>`).join("")+"</ol>";
+}
+$("back").addEventListener("click",()=>{if(current>0){current--;render();}});
+$("next").addEventListener("click",()=>{if(answers[current]===null)return;if(current<questions.length-1){current++;render();}else finish();});
+$("restart").addEventListener("click",()=>{current=0;answers=Array(questions.length).fill(null);$("result").classList.add("hidden");$("quiz").classList.remove("hidden");render();});
+$("share").addEventListener("click",async()=>{
+ const text="Mis respuestas al cuestionario ¿Amistad o tranquilidad? ❤️\n\n"+questions.map((q,i)=>`${i+1}. ${q.q}\n${q.a[answers[i]]}`).join("\n\n")+"\n\nMe gustaría que conversemos con calma sobre lo que pensamos.";
+ try{
+  if(navigator.share) await navigator.share({title:"Mis respuestas",text});
+  else if(navigator.clipboard){await navigator.clipboard.writeText(text);$("shareNote").textContent="¡Resumen copiado! Ya puedes pegarlo en WhatsApp.";}
+  else {$("shareNote").textContent="Mantén presionado el resumen para copiarlo o comparte esta pantalla.";}
+ }catch(e){if(e.name!=="AbortError")$("shareNote").textContent="No se pudo abrir compartir. Puedes copiar tus respuestas manualmente.";}
+});
+render();
+</script>
+</body>
+</html>
